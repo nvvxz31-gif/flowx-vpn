@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Hash, Calendar, Bell, Globe, Shield, ExternalLink } from 'lucide-react';
+import { User, Mail, Hash, Calendar, Bell, Globe, Shield, ExternalLink, FileText, RefreshCw, Info, Mail as MailIcon, ChevronRight, X } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
+
+const legalSections = [
+  { icon: Shield, title: 'Политика конфиденциальности', content: `FlowX VPN придерживается строгой политики no-log. Мы не собираем, не храним и не передаём данные о вашей интернет-активности.\n\nМы собираем только:\n• Email (опционально)\n• Telegram ID (для авторизации)\n• Статистику трафика (без содержимого)\n\nОбновлено: 1 января 2026` },
+  { icon: FileText, title: 'Условия использования', content: `Запрещается использовать сервис для незаконной деятельности, рассылки спама, DDoS-атак или распространения вредоносного ПО.\n\nОбновлено: 1 января 2026` },
+  { icon: RefreshCw, title: 'Политика возврата', content: `Возврат средств в течение 48 часов с момента первой оплаты, если сервис не работает по нашей вине.` },
+  { icon: Info, title: 'О компании', content: `FlowX VPN — премиальный VPN-сервис на протоколе VLESS+Reality. Работаем с 2024 года.` },
+  { icon: MailIcon, title: 'Контакты', content: `Telegram: @flowxvpn_support\nEmail: support@flowx.com\nВремя ответа: до 24 часов.` },
+];
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
 
@@ -22,6 +31,7 @@ function Toggle({ enabled, onChange }) {
 }
 
 export default function TabProfile() {
+  const [openLegal, setOpenLegal] = useState(null);
   const [notifications, setNotifications] = useState({
     traffic: true,
     expiry: true,
@@ -142,7 +152,7 @@ export default function TabProfile() {
         href="https://my.flowx.com"
         target="_blank"
         rel="noreferrer"
-        className="flex items-center justify-between p-4 rounded-2xl"
+        className="flex items-center justify-between p-4 rounded-2xl mb-4"
         style={{ background: 'rgba(28,28,30,0.5)', border: '1px solid rgba(255,255,255,0.07)' }}
       >
         <div className="flex items-center gap-3">
@@ -151,6 +161,71 @@ export default function TabProfile() {
         </div>
         <ExternalLink size={14} color="#98989D" />
       </motion.a>
+
+      {/* Legal section */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+      >
+        <h3 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#98989D' }}>Юридическая информация</h3>
+        <div className="flex flex-col gap-2">
+          {legalSections.map((section, i) => {
+            const Icon = section.icon;
+            return (
+              <motion.button
+                key={i}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setOpenLegal(section)}
+                className="flex items-center justify-between p-4 rounded-2xl text-left"
+                style={{ background: 'rgba(28,28,30,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(10,132,255,0.1)' }}>
+                    <Icon size={15} color="#0A84FF" />
+                  </div>
+                  <span className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{section.title}</span>
+                </div>
+                <ChevronRight size={15} color="#98989D" />
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* Legal modal */}
+      <AnimatePresence>
+        {openLegal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50"
+              style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)' }}
+              onClick={() => setOpenLegal(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              transition={springConfig}
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl"
+              style={{ background: 'rgba(18,18,20,0.99)', border: '1px solid rgba(255,255,255,0.1)', maxHeight: '80vh' }}
+            >
+              <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                <h3 className="text-base font-bold" style={{ color: '#F5F5F7' }}>{openLegal.title}</h3>
+                <button onClick={() => setOpenLegal(null)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <X size={14} color="#98989D" />
+                </button>
+              </div>
+              <div className="p-5 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 80px)' }}>
+                <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: '#98989D' }}>{openLegal.content}</p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

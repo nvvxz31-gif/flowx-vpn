@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wifi, WifiOff, Zap, Globe, ChevronRight, Gift, Activity } from 'lucide-react';
+import { Wifi, WifiOff, Zap, Globe, ChevronRight, Gift, Activity, HelpCircle, MessageCircle, ChevronDown } from 'lucide-react';
 import ServerGlobe from './ServerGlobe';
+
+const faq = [
+  { q: 'Как подключиться к VPN?', a: 'Скачайте приложение Streisand или Hiddify для вашего устройства, скопируйте конфиг в разделе «Подключения» и вставьте его в приложение.' },
+  { q: 'Почему VPN медленно работает?', a: 'Попробуйте сменить сервер. Серверы с нагрузкой ниже 50% обычно обеспечивают лучшую скорость.' },
+  { q: 'Что делать, если бот заблокирован?', a: 'Зайдите на my.flowx.com через браузер. Там доступны все функции без Telegram.' },
+  { q: 'Логируете ли вы трафик?', a: 'Нет. Мы не сохраняем логи трафика, DNS-запросов или IP-адресов. Политика строгого no-log.' },
+];
+
+const platforms = [
+  { name: 'iOS', icon: '🍎', app: 'Streisand' },
+  { name: 'Android', icon: '🤖', app: 'Hiddify' },
+  { name: 'Windows', icon: '🪟', app: 'Nekoray' },
+  { name: 'macOS', icon: '🖥️', app: 'Streisand' },
+];
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 };
 
@@ -14,7 +28,8 @@ const servers = [
 ];
 
 export default function TabConnections() {
-  const [status, setStatus] = useState('trial'); // trial | active | inactive
+  const [status, setStatus] = useState('trial');
+  const [openFaq, setOpenFaq] = useState(null);
   const [selectedServer, setSelectedServer] = useState(servers[0]);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [showServerList, setShowServerList] = useState(false);
@@ -143,68 +158,6 @@ export default function TabConnections() {
         </div>
       </motion.div>
 
-      {/* Server selector */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...springConfig, delay: 0.1 }}
-        className="mb-4"
-      >
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>Сервер</span>
-          <button
-            onClick={() => setShowServerList(!showServerList)}
-            className="text-xs font-medium"
-            style={{ color: '#0A84FF' }}
-          >
-            {showServerList ? 'Скрыть' : 'Все серверы'}
-          </button>
-        </div>
-
-        <ServerGlobe selectedServer={selectedServer} onSelect={setSelectedServer} />
-
-        <AnimatePresence>
-          {showServerList && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-3 flex flex-col gap-2 overflow-hidden"
-            >
-              {servers.map(server => (
-                <motion.button
-                  key={server.city}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { setSelectedServer(server); setShowServerList(false); }}
-                  className="flex items-center justify-between p-3 rounded-2xl"
-                  style={{
-                    background: selectedServer.city === server.city ? 'rgba(10,132,255,0.15)' : 'rgba(28,28,30,0.6)',
-                    border: selectedServer.city === server.city ? '1px solid rgba(10,132,255,0.4)' : '1px solid rgba(255,255,255,0.06)',
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{server.flag}</span>
-                    <div className="text-left">
-                      <div className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{server.city}</div>
-                      <div className="text-xs" style={{ color: '#98989D' }}>{server.country}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <div className="text-xs font-mono" style={{ color: '#0A84FF' }}>{server.ping} мс</div>
-                      <div className="text-xs" style={{ color: '#98989D' }}>Нагр. {server.load}%</div>
-                    </div>
-                    {selectedServer.city === server.city && (
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#30D158' }} />
-                    )}
-                  </div>
-                </motion.button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
       {/* Actions */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -251,6 +204,79 @@ export default function TabConnections() {
           <Zap size={18} />
           Подключить VPN
         </motion.button>
+      </motion.div>
+
+      {/* Help section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...springConfig, delay: 0.35 }}
+        className="mt-4"
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <HelpCircle size={14} color="#98989D" />
+          <span className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>Помощь</span>
+        </div>
+
+        {/* Platforms */}
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          {platforms.map((p) => (
+            <button
+              key={p.name}
+              className="glass-card p-3 rounded-2xl text-center"
+            >
+              <div className="text-xl mb-1">{p.icon}</div>
+              <div className="text-xs font-medium" style={{ color: '#F5F5F7' }}>{p.name}</div>
+              <div className="text-xs" style={{ color: '#98989D', fontSize: '9px' }}>{p.app}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* FAQ */}
+        <div className="flex flex-col gap-2 mb-3">
+          {faq.map((item, i) => (
+            <div
+              key={i}
+              className="rounded-2xl overflow-hidden"
+              style={{ background: 'rgba(28,28,30,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}
+            >
+              <button
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                className="w-full flex items-center justify-between p-3.5 text-left"
+              >
+                <span className="text-sm font-medium pr-3" style={{ color: '#F5F5F7' }}>{item.q}</span>
+                <motion.div animate={{ rotate: openFaq === i ? 180 : 0 }} transition={springConfig} className="flex-shrink-0">
+                  <ChevronDown size={15} color="#98989D" />
+                </motion.div>
+              </button>
+              <AnimatePresence>
+                {openFaq === i && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={springConfig}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-4 pb-4 text-sm leading-relaxed" style={{ color: '#98989D' }}>{item.a}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Support */}
+        <a
+          href="https://t.me/flowxvpn_support"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-center gap-2 p-4 rounded-2xl font-semibold"
+          style={{ background: 'rgba(10,132,255,0.1)', border: '1px solid rgba(10,132,255,0.25)', color: '#0A84FF' }}
+        >
+          <MessageCircle size={15} />
+          Написать в поддержку
+        </a>
       </motion.div>
 
       {/* Gift modal */}
