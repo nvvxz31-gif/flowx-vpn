@@ -1,18 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Wifi, Globe, Clock, Zap, Copy, QrCode } from 'lucide-react';
+import { Globe, Clock, Zap, Copy, QrCode } from 'lucide-react';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
+
+function useCountdown(targetDate) {
+  const calcLeft = () => {
+    const diff = new Date(targetDate) - new Date();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return {
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000) / 60000),
+      seconds: Math.floor((diff % 60000) / 1000),
+    };
+  };
+  const [left, setLeft] = useState(calcLeft);
+  useEffect(() => {
+    const t = setInterval(() => setLeft(calcLeft()), 1000);
+    return () => clearInterval(t);
+  }, [targetDate]);
+  return left;
+}
 
 export default function UserDashboard() {
   const usedGb = 12.4;
   const totalGb = 150;
   const usedPercent = (usedGb / totalGb) * 100;
+  const expiry = '2026-06-14T23:59:59';
+  const countdown = useCountdown(expiry);
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Добро пожаловать</h1>
+    <div className="p-4 md:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Добро пожаловать</h1>
         <p className="text-sm" style={{ color: '#98989D' }}>Ваша подписка активна · FlowX Pro</p>
       </div>
 
@@ -21,9 +42,9 @@ export default function UserDashboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-6 rounded-3xl xl:col-span-2"
+          className="glass-card p-5 rounded-3xl xl:col-span-2"
         >
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <motion.div
                 className="w-3 h-3 rounded-full"
@@ -33,33 +54,58 @@ export default function UserDashboard() {
               />
               <span className="text-sm font-semibold" style={{ color: '#30D158' }}>Подписка активна</span>
             </div>
-            <span className="text-sm" style={{ color: '#98989D' }}>До 14 июня 2026</span>
+            <span
+              className="text-xs px-2.5 py-1 rounded-full font-medium"
+              style={{ background: 'rgba(48,209,88,0.12)', color: '#30D158' }}
+            >
+              FlowX Pro
+            </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          {/* Countdown timer */}
+          <div className="flex items-center justify-center gap-3 py-4 mb-4 rounded-2xl" style={{ background: 'rgba(10,132,255,0.06)', border: '1px solid rgba(10,132,255,0.12)' }}>
+            {[
+              { val: countdown.days, label: 'дней' },
+              { val: countdown.hours, label: 'часов' },
+              { val: countdown.minutes, label: 'минут' },
+              { val: countdown.seconds, label: 'секунд' },
+            ].map(({ val, label }, i) => (
+              <React.Fragment key={label}>
+                {i > 0 && <span className="text-lg font-bold" style={{ color: 'rgba(10,132,255,0.5)' }}>:</span>}
+                <div className="text-center">
+                  <div className="text-2xl font-bold font-mono" style={{ color: '#0A84FF' }}>
+                    {String(val).padStart(2, '0')}
+                  </div>
+                  <div className="text-xs" style={{ color: '#98989D' }}>{label}</div>
+                </div>
+              </React.Fragment>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
             {[
               { Ic: Globe, label: 'Тариф', value: 'FlowX Pro', color: '#0A84FF' },
               { Ic: Zap, label: 'Трафик', value: `${usedGb} / ${totalGb} ГБ`, color: '#5E5CE6' },
-              { Ic: Clock, label: 'Осталось', value: '31 день', color: '#30D158' },
+              { Ic: Clock, label: 'Истекает', value: '14 июн 2026', color: '#30D158' },
             ].map(({ Ic, label, value, color }) => (
-              <div key={label} className="text-center">
+              <div key={label} className="text-center p-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center mx-auto mb-1.5"
                   style={{ background: `${color}18` }}
                 >
-                  <Ic size={18} color={color} />
+                  <Ic size={15} color={color} />
                 </div>
                 <div className="text-xs mb-0.5" style={{ color: '#98989D' }}>{label}</div>
-                <div className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>{value}</div>
+                <div className="text-xs font-semibold" style={{ color: '#F5F5F7' }}>{value}</div>
               </div>
             ))}
           </div>
 
           {/* Traffic bar */}
-          <div className="mt-5">
+          <div className="mt-4">
             <div className="flex justify-between text-xs mb-1.5" style={{ color: '#98989D' }}>
               <span>Использовано трафика</span>
-              <span>{Math.round(usedPercent)}%</span>
+              <span>{usedGb} / {totalGb} ГБ · {Math.round(usedPercent)}%</span>
             </div>
             <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
               <motion.div

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Users, BarChart3, CreditCard, Server,
-  Users2, Settings, HardDrive, ClipboardList, Zap, LogOut
+  Users2, Settings, HardDrive, ClipboardList, Zap, LogOut, Headphones
 } from 'lucide-react';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { id: 'plans', icon: CreditCard, label: 'Тарифы' },
   { id: 'nodes', icon: Server, label: 'Ноды' },
   { id: 'partners', icon: Users2, label: 'Партнёры' },
+  { id: 'support', icon: Headphones, label: 'Поддержка', badge: true },
   { id: 'backups', icon: HardDrive, label: 'Бэкапы' },
   { id: 'audit', icon: ClipboardList, label: 'Аудит-лог' },
   { id: 'settings', icon: Settings, label: 'Настройки' },
@@ -74,6 +75,12 @@ export default function AdminSidebar({ active, onNavigate }) {
               >
                 {item.label}
               </span>
+              {item.badge && (
+                <div
+                  className="ml-auto w-2 h-2 rounded-full relative z-10"
+                  style={{ background: '#FF453A' }}
+                />
+              )}
               {isActive && (
                 <div
                   className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full"

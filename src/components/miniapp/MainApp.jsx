@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, CreditCard, Users, User } from 'lucide-react';
+import { Zap, CreditCard, Users, User, HeadphonesIcon } from 'lucide-react';
 import TabConnections from './TabConnections';
 import TabPlans from './TabPlans';
 import TabReferral from './TabReferral';
 import TabProfile from './TabProfile';
+import TabSupport from './TabSupport';
 import BalanceCapsule from './BalanceCapsule';
 
 const tabs = [
+  { id: 'support', icon: HeadphonesIcon, label: 'Помощь' },
   { id: 'plans', icon: CreditCard, label: 'Тарифы' },
-  { id: 'referral', icon: Users, label: 'Партнёры' },
   { id: 'connections', icon: Zap, label: 'VPN', center: true },
+  { id: 'referral', icon: Users, label: 'Партнёры' },
   { id: 'profile', icon: User, label: 'Профиль' },
 ];
 
@@ -24,6 +26,7 @@ export default function MainApp() {
     plans: <TabPlans />,
     referral: <TabReferral />,
     profile: <TabProfile />,
+    support: <TabSupport />,
   };
 
   return (

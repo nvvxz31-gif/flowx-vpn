@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wifi, WifiOff, Zap, Globe, ChevronRight, Gift, Activity, HelpCircle, MessageCircle, ChevronDown } from 'lucide-react';
+import { Zap, HelpCircle, ChevronDown, X } from 'lucide-react';
 import ServerGlobe from './ServerGlobe';
 
 const faq = [
@@ -11,11 +11,55 @@ const faq = [
 ];
 
 const platforms = [
-  { name: 'iOS', icon: '🍎', app: 'Streisand' },
-  { name: 'Android', icon: '🤖', app: 'Hiddify' },
-  { name: 'Windows', icon: '🪟', app: 'Nekoray' },
-  { name: 'macOS', icon: '🖥️', app: 'Streisand' },
+  { name: 'iOS', icon: '🍎', app: 'Happ' },
+  { name: 'Android', icon: '🤖', app: 'V2Ray' },
+  { name: 'Windows', icon: '🪟', app: 'Incy' },
+  { name: 'macOS', icon: '🖥️', app: 'Happ' },
 ];
+
+const appGuides = {
+  Happ: {
+    title: 'Happ',
+    icon: 'https://media.base44.com/images/public/6a088498feb97a4eaded517d/47e2ae396_OIP.webp',
+    steps: [
+      'Скачайте Happ из App Store (iOS) или Google Play (Android)',
+      'Откройте приложение и нажмите «+» в правом верхнем углу',
+      'Выберите «Импорт из буфера обмена» или «Сканировать QR-код»',
+      'Перейдите в раздел «Подключения» нашего сервиса и скопируйте конфиг',
+      'Вернитесь в Happ — конфиг будет добавлен автоматически',
+      'Нажмите на сервер и нажмите «Подключить»',
+      '✅ Готово! VPN активен',
+    ],
+  },
+  V2Ray: {
+    title: 'V2Ray',
+    icon: 'https://media.base44.com/images/public/6a088498feb97a4eaded517d/163bafa00_image.png',
+    steps: [
+      'Скачайте V2RayNG (Android) или V2Box (iOS) из магазина приложений',
+      'Откройте приложение и нажмите «+»',
+      'Выберите «Импорт config из буфера»',
+      'Скопируйте конфигурационную ссылку из раздела «Подключения»',
+      'Вставьте ссылку — сервер добавится в список',
+      'Нажмите на сервер для выбора, затем нажмите кнопку запуска ▶',
+      'Разрешите запрос VPN-соединения',
+      '✅ V2Ray активен!',
+    ],
+  },
+  Incy: {
+    title: 'Incy',
+    icon: 'https://media.base44.com/images/public/6a088498feb97a4eaded517d/3b7573844_image.png',
+    steps: [
+      'Скачайте Incy для вашей платформы (Windows/macOS/Linux)',
+      'Установите приложение и запустите его',
+      'Нажмите «Добавить сервер» или кнопку «+»',
+      'Выберите «Вставить из буфера обмена»',
+      'Скопируйте конфиг из раздела «Подключения» нашего сервиса',
+      'Конфиг появится в списке серверов',
+      'Выберите нужный сервер и нажмите «Подключить»',
+      '✅ Incy готов к работе!',
+    ],
+  },
+};
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 };
 
@@ -33,6 +77,7 @@ export default function TabConnections() {
   const [selectedServer, setSelectedServer] = useState(servers[0]);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [showServerList, setShowServerList] = useState(false);
+  const [activeGuide, setActiveGuide] = useState(null);
   const usedGb = 12.4;
   const totalGb = 50;
   const usedPercent = (usedGb / totalGb) * 100;
@@ -158,32 +203,7 @@ export default function TabConnections() {
         </div>
       </motion.div>
 
-      {/* Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...springConfig, delay: 0.2 }}
-        className="grid grid-cols-2 gap-3"
-      >
-        <motion.button
-          whileTap={{ scale: 0.96 }}
-          className="flex items-center justify-center gap-2 p-4 rounded-2xl"
-          style={{ background: 'rgba(10,132,255,0.12)', border: '1px solid rgba(10,132,255,0.3)' }}
-        >
-          <Activity size={16} color="#0A84FF" />
-          <span className="text-sm font-medium" style={{ color: '#0A84FF' }}>Тест скорости</span>
-        </motion.button>
 
-        <motion.button
-          whileTap={{ scale: 0.96 }}
-          onClick={() => setShowGiftModal(true)}
-          className="flex items-center justify-center gap-2 p-4 rounded-2xl"
-          style={{ background: 'rgba(94,92,230,0.12)', border: '1px solid rgba(94,92,230,0.3)' }}
-        >
-          <Gift size={16} color="#5E5CE6" />
-          <span className="text-sm font-medium" style={{ color: '#5E5CE6' }}>Пригласить друга</span>
-        </motion.button>
-      </motion.div>
 
       {/* Connect button */}
       <motion.div
@@ -220,16 +240,20 @@ export default function TabConnections() {
 
         {/* Platforms */}
         <div className="grid grid-cols-4 gap-2 mb-3">
-          {platforms.map((p) => (
-            <button
-              key={p.name}
-              className="glass-card p-3 rounded-2xl text-center"
-            >
-              <div className="text-xl mb-1">{p.icon}</div>
-              <div className="text-xs font-medium" style={{ color: '#F5F5F7' }}>{p.name}</div>
-              <div className="text-xs" style={{ color: '#98989D', fontSize: '9px' }}>{p.app}</div>
-            </button>
-          ))}
+          {platforms.map((p) => {
+            const guide = appGuides[p.app];
+            return (
+              <button
+                key={p.name}
+                onClick={() => guide && setActiveGuide(guide)}
+                className="glass-card p-3 rounded-2xl text-center"
+              >
+                <div className="text-xl mb-1">{p.icon}</div>
+                <div className="text-xs font-medium" style={{ color: '#F5F5F7' }}>{p.name}</div>
+                <div className="text-xs" style={{ color: '#0A84FF', fontSize: '9px' }}>{p.app} →</div>
+              </button>
+            );
+          })}
         </div>
 
         {/* FAQ */}
@@ -266,18 +290,72 @@ export default function TabConnections() {
           ))}
         </div>
 
-        {/* Support */}
-        <a
-          href="https://t.me/flowxvpn_support"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center gap-2 p-4 rounded-2xl font-semibold"
-          style={{ background: 'rgba(10,132,255,0.1)', border: '1px solid rgba(10,132,255,0.25)', color: '#0A84FF' }}
-        >
-          <MessageCircle size={15} />
-          Написать в поддержку
-        </a>
       </motion.div>
+
+      {/* App Guide Modal */}
+      <AnimatePresence>
+        {activeGuide && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50"
+              style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)' }}
+              onClick={() => setActiveGuide(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 60 }}
+              transition={springConfig}
+              className="fixed bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl overflow-y-auto"
+              style={{ background: 'rgba(22,22,24,0.99)', border: '1px solid rgba(255,255,255,0.1)', maxHeight: '85vh' }}
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <img src={activeGuide.icon} alt={activeGuide.title} className="w-10 h-10 rounded-xl object-cover" />
+                <div>
+                  <h3 className="text-lg font-bold" style={{ color: '#F5F5F7' }}>Настройка {activeGuide.title}</h3>
+                  <p className="text-xs" style={{ color: '#98989D' }}>Пошаговая инструкция</p>
+                </div>
+                <button onClick={() => setActiveGuide(null)} className="ml-auto">
+                  <X size={20} color="#98989D" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {activeGuide.steps.map((step, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className="flex items-start gap-3 p-3.5 rounded-2xl"
+                    style={{ background: 'rgba(44,44,46,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
+                  >
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5"
+                      style={{ background: step.startsWith('✅') ? 'rgba(48,209,88,0.2)' : 'rgba(10,132,255,0.2)', color: step.startsWith('✅') ? '#30D158' : '#0A84FF' }}
+                    >
+                      {step.startsWith('✅') ? '✓' : i + 1}
+                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: '#F5F5F7' }}>{step}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setActiveGuide(null)}
+                className="w-full mt-5 py-4 rounded-2xl font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)' }}
+              >
+                Понятно, спасибо!
+              </motion.button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Gift modal */}
       <AnimatePresence>
