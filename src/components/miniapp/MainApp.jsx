@@ -7,19 +7,23 @@ import TabReferral from './TabReferral';
 import TabProfile from './TabProfile';
 import TabSupport from './TabSupport';
 import BalanceCapsule from './BalanceCapsule';
-
-const tabs = [
-  { id: 'support', icon: HeadphonesIcon, label: 'Помощь' },
-  { id: 'plans', icon: CreditCard, label: 'Тарифы' },
-  { id: 'connections', icon: Zap, label: 'VPN', center: true },
-  { id: 'referral', icon: Users, label: 'Партнёры' },
-  { id: 'profile', icon: User, label: 'Профиль' },
-];
+import { useApp, t } from '@/lib/AppContext';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 };
 
 export default function MainApp() {
   const [activeTab, setActiveTab] = useState('connections');
+  const { theme, lang } = useApp();
+
+  const isLight = theme === 'light';
+
+  const tabs = [
+    { id: 'support', icon: HeadphonesIcon, label: t(lang, 'help') },
+    { id: 'plans', icon: CreditCard, label: t(lang, 'plans') },
+    { id: 'connections', icon: Zap, label: t(lang, 'vpn'), center: true },
+    { id: 'referral', icon: Users, label: t(lang, 'partners') },
+    { id: 'profile', icon: User, label: t(lang, 'profile') },
+  ];
 
   const tabComponents = {
     connections: <TabConnections />,
@@ -29,8 +33,12 @@ export default function MainApp() {
     support: <TabSupport />,
   };
 
+  const bgRoot = isLight ? '#F2F2F7' : '#0D0D0F';
+  const navBg = isLight ? 'rgba(255,255,255,0.9)' : 'rgba(28,28,30,0.85)';
+  const navBorder = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)';
+
   return (
-    <div className="fixed inset-0 overflow-hidden flex flex-col" style={{ background: '#0D0D0F' }}>
+    <div className="fixed inset-0 overflow-hidden flex flex-col" style={{ background: bgRoot }}>
       {/* Background gradient orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
@@ -71,17 +79,19 @@ export default function MainApp() {
         <div
           className="flex items-center justify-around px-2 py-2 rounded-4xl"
           style={{
-            background: 'rgba(28,28,30,0.85)',
+            background: navBg,
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            border: `1px solid ${navBorder}`,
+            boxShadow: isLight ? '0 8px 32px rgba(0,0,0,0.12)' : '0 8px 32px rgba(0,0,0,0.4)',
           }}
         >
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             const isVPN = tab.center;
+            const inactiveColor = isLight ? '#636366' : '#98989D';
+            const activeTextColor = isLight ? '#1C1C1E' : '#F5F5F7';
 
             if (isVPN) {
               return (
@@ -107,7 +117,7 @@ export default function MainApp() {
                   </motion.div>
                   <span
                     className="text-xs font-semibold mt-1"
-                    style={{ color: isActive ? '#0A84FF' : '#98989D', fontSize: '9px' }}
+                    style={{ color: isActive ? '#0A84FF' : inactiveColor, fontSize: '9px' }}
                   >
                     {tab.label}
                   </span>
@@ -135,11 +145,11 @@ export default function MainApp() {
                   />
                 )}
                 <div className="relative">
-                  <Icon size={18} style={{ color: isActive ? '#0A84FF' : '#98989D' }} />
+                  <Icon size={18} style={{ color: isActive ? '#0A84FF' : inactiveColor }} />
                 </div>
                 <span
                   className="text-xs font-medium"
-                  style={{ color: isActive ? '#F5F5F7' : '#98989D', fontSize: '9px' }}
+                  style={{ color: isActive ? activeTextColor : inactiveColor, fontSize: '9px' }}
                 >
                   {tab.label}
                 </span>

@@ -29,9 +29,9 @@ export default function AdminAuditLog() {
   );
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Аудит-лог</h1>
+    <div className="p-4 md:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Аудит-лог</h1>
         <p className="text-sm" style={{ color: '#98989D' }}>История всех действий администраторов</p>
       </div>
 
@@ -56,43 +56,48 @@ export default function AdminAuditLog() {
         </button>
       </div>
 
-      {/* Log table */}
-      <div className="glass-card rounded-2xl overflow-hidden">
-        <div
-          className="grid grid-cols-5 gap-4 px-5 py-3 text-xs font-medium"
-          style={{ color: '#98989D', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-        >
+      {/* Log table desktop */}
+      <div className="glass-card rounded-2xl overflow-hidden hidden md:block">
+        <div className="grid grid-cols-5 gap-4 px-5 py-3 text-xs font-medium" style={{ color: '#98989D', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <span>Действие</span>
           <span className="col-span-2">Объект</span>
           <span>Администратор</span>
           <span>Время</span>
         </div>
-
         {filtered.map((event, i) => {
           const adminStyle = adminColors[event.admin] || { color: '#98989D', bg: 'rgba(255,255,255,0.08)' };
           return (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="grid grid-cols-5 gap-4 px-5 py-4 border-b items-center"
-              style={{ borderColor: 'rgba(255,255,255,0.04)' }}
-            >
+            <motion.div key={event.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+              className="grid grid-cols-5 gap-4 px-5 py-4 border-b items-center" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
               <div className="flex items-center gap-2">
                 <span className="text-base">{event.icon}</span>
                 <span className="text-sm" style={{ color: '#F5F5F7' }}>{event.action}</span>
               </div>
               <div className="col-span-2 text-sm" style={{ color: '#98989D' }}>{event.object}</div>
-              <div>
-                <span
-                  className="text-xs px-2 py-0.5 rounded-full font-medium"
-                  style={{ background: adminStyle.bg, color: adminStyle.color }}
-                >
-                  {event.admin}
-                </span>
-              </div>
+              <div><span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: adminStyle.bg, color: adminStyle.color }}>{event.admin}</span></div>
               <div className="text-xs font-mono" style={{ color: '#98989D' }}>{event.time}</div>
+            </motion.div>
+          );
+        })}
+      </div>
+      {/* Log cards mobile */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {filtered.map((event, i) => {
+          const adminStyle = adminColors[event.admin] || { color: '#98989D', bg: 'rgba(255,255,255,0.08)' };
+          return (
+            <motion.div key={event.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+              className="glass-card p-4 rounded-2xl">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-lg flex-shrink-0">{event.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{event.action}</div>
+                  <div className="text-xs mt-0.5 truncate" style={{ color: '#98989D' }}>{event.object}</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: adminStyle.bg, color: adminStyle.color }}>{event.admin}</span>
+                <span className="text-xs font-mono" style={{ color: '#98989D' }}>{event.time}</span>
+              </div>
             </motion.div>
           );
         })}

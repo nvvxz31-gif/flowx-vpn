@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, BarChart3, CreditCard, Server,
-  Users2, Settings, HardDrive, ClipboardList, Zap, LogOut, Headphones, Menu, X
+  Users2, Settings, HardDrive, ClipboardList, Zap, LogOut, Headphones, Menu, X, ShieldOff
 } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import AdminDashboard from '../components/admin/AdminDashboard';
@@ -14,8 +14,8 @@ import AdminPartners from '../components/admin/AdminPartners';
 import AdminBackups from '../components/admin/AdminBackups';
 import AdminAuditLog from '../components/admin/AdminAuditLog';
 import AdminSettings from '../components/admin/AdminSettings';
-import AdminLogin from '../components/admin/AdminLogin';
 import AdminSupport from '../components/admin/AdminSupport';
+import { useAuth } from '@/lib/AuthContext';
 
 const navItems = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Дашборд' },
@@ -31,12 +31,43 @@ const navItems = [
 ];
 
 export default function AdminPanel() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, isAuthenticated, isLoadingAuth, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  if (!isLoggedIn) {
-    return <AdminLogin onLogin={() => setIsLoggedIn(true)} />;
+  // Loading state
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0D0D0F' }}>
+        <div className="w-8 h-8 border-2 border-transparent rounded-full animate-spin"
+          style={{ borderTopColor: '#0A84FF', borderRightColor: '#5E5CE6' }} />
+      </div>
+    );
+  }
+
+  // ✅ SECURITY: реальная проверка роли через Base44 Auth, не useState
+  // Неаутентифицированный или не-admin видит стандартный экран логина Base44
+  if (!isAuthenticated || user?.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0D0D0F' }}>
+        <div className="text-center max-w-sm">
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(255,69,58,0.15)', border: '1px solid rgba(255,69,58,0.3)' }}>
+            <ShieldOff size={28} color="#FF453A" />
+          </div>
+          <h1 className="text-xl font-bold mb-2" style={{ color: '#F5F5F7' }}>Доступ запрещён</h1>
+          <p className="text-sm mb-6" style={{ color: '#98989D' }}>
+            {!isAuthenticated ? 'Необходима авторизация для доступа к панели управления.' : 'У вашего аккаунта нет прав администратора.'}
+          </p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="px-6 py-3 rounded-xl text-sm font-semibold text-white"
+            style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)' }}
+          >
+            На главную
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const sections = {
@@ -114,7 +145,7 @@ export default function AdminPanel() {
                 })}
               </nav>
               <div className="px-3">
-                <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ color: '#98989D' }}>
+                <button onClick={() => logout()} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ color: '#98989D' }}>
                   <LogOut size={16} /><span className="text-sm">Выйти</span>
                 </button>
               </div>

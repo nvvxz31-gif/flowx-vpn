@@ -4,6 +4,9 @@ import { Zap, CreditCard, Users, User, QrCode, History, LayoutDashboard, LogOut,
 import UserDashboard from './UserDashboard';
 import UserSubscription from './UserSubscription';
 import UserPaymentHistory from './UserPaymentHistory';
+import UserConnect from './UserConnect';
+import UserReferral from './UserReferral';
+import UserProfile from './UserProfile';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
 
@@ -19,25 +22,10 @@ const navItems = [
 const content = {
   dashboard: <UserDashboard />,
   subscription: <UserSubscription />,
-  connect: (
-    <div className="p-4 md:p-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7' }}>Подключение</h1>
-      <p className="text-sm mt-2" style={{ color: '#98989D' }}>QR-код и конфиг-файлы для вашего устройства.</p>
-    </div>
-  ),
+  connect: <UserConnect />,
   history: <UserPaymentHistory />,
-  referral: (
-    <div className="p-4 md:p-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7' }}>Партнёры</h1>
-      <p className="text-sm mt-2" style={{ color: '#98989D' }}>Реферальная программа и ваши доходы.</p>
-    </div>
-  ),
-  profile: (
-    <div className="p-4 md:p-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7' }}>Профиль</h1>
-      <p className="text-sm mt-2" style={{ color: '#98989D' }}>Настройки аккаунта.</p>
-    </div>
-  ),
+  referral: <UserReferral />,
+  profile: <UserProfile />,
 };
 
 export default function UserPanelLayout() {

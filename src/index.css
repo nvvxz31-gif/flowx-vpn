@@ -57,6 +57,53 @@
   }
 }
 
+/* Light theme overrides */
+html.light-theme {
+  --bg-root: #F2F2F7;
+  --bg-elevated: rgba(255,255,255,0.85);
+  --bg-glass: rgba(255,255,255,0.7);
+  --border-glass: rgba(0,0,0,0.08);
+  --text-primary: #1C1C1E;
+  --text-secondary: #636366;
+
+  --background: 0 0% 95%;
+  --foreground: 0 0% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 11%;
+  --secondary: 0 0% 94%;
+  --secondary-foreground: 0 0% 11%;
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 39%;
+  --border: 0 0% 88%;
+  --input: 0 0% 88%;
+}
+
+html.light-theme body {
+  background-color: #F2F2F7;
+  color: #1C1C1E;
+}
+
+html.light-theme .glass-card {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,0,0,0.07);
+}
+
+html.light-theme .glass-card::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 60%);
+}
+
+html.light-theme .glass-1 {
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+html.light-theme .glass-2 {
+  background: rgba(245,245,247,0.7);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Send, Plus, Ticket, Paperclip, Star, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useApp } from '@/lib/AppContext';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
 
@@ -72,6 +73,11 @@ function categoryLabel(c) {
 }
 
 function RatingModal({ onRate, onClose }) {
+  const { theme } = useApp();
+  const isLight = theme === 'light';
+  const primaryText = isLight ? '#1C1C1E' : '#F5F5F7';
+  const secondaryText = isLight ? '#636366' : '#98989D';
+
   const [hovered, setHovered] = useState(0);
   const [selected, setSelected] = useState(0);
 
@@ -97,11 +103,11 @@ function RatingModal({ onRate, onClose }) {
         exit={{ opacity: 0, y: 40 }}
         transition={springConfig}
         className="fixed bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl"
-        style={{ background: 'rgba(22,22,24,0.99)', border: '1px solid rgba(255,255,255,0.1)' }}
+        style={{ background: isLight ? 'rgba(242,242,247,0.99)' : 'rgba(22,22,24,0.99)', border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.1)' }}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold" style={{ color: '#F5F5F7' }}>Оцените работу оператора</h3>
-          <button onClick={onClose}><X size={18} color="#98989D" /></button>
+          <h3 className="text-base font-bold" style={{ color: primaryText }}>Оцените работу оператора</h3>
+          <button onClick={onClose}><X size={18} color={secondaryText} /></button>
         </div>
         <div className="flex justify-center gap-3 mb-3">
           {[1, 2, 3, 4, 5].map(n => (
@@ -115,7 +121,7 @@ function RatingModal({ onRate, onClose }) {
               <Star
                 size={36}
                 fill={(hovered || selected) >= n ? '#FFD60A' : 'transparent'}
-                color={(hovered || selected) >= n ? '#FFD60A' : '#444'}
+                color={(hovered || selected) >= n ? '#FFD60A' : isLight ? '#ccc' : '#444'}
                 strokeWidth={1.5}
               />
             </motion.button>
@@ -132,8 +138,8 @@ function RatingModal({ onRate, onClose }) {
           disabled={selected === 0}
           className="w-full py-3.5 rounded-2xl font-semibold text-sm"
           style={{
-            background: selected > 0 ? 'linear-gradient(135deg, #0A84FF, #5E5CE6)' : 'rgba(44,44,46,0.8)',
-            color: selected > 0 ? 'white' : '#98989D',
+            background: selected > 0 ? 'linear-gradient(135deg, #0A84FF, #5E5CE6)' : (isLight ? 'rgba(0,0,0,0.08)' : 'rgba(44,44,46,0.8)'),
+            color: selected > 0 ? 'white' : secondaryText,
           }}
         >
           Отправить оценку
@@ -144,6 +150,15 @@ function RatingModal({ onRate, onClose }) {
 }
 
 function TicketChat({ ticket, onBack, onSend, onRate }) {
+  const { theme } = useApp();
+  const isLight = theme === 'light';
+  const primaryText = isLight ? '#1C1C1E' : '#F5F5F7';
+  const secondaryText = isLight ? '#636366' : '#98989D';
+  const inputBg = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(44,44,46,0.8)';
+  const inputBorder = isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)';
+  const btnBg = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(44,44,46,0.8)';
+  const btnBorder = isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)';
+
   const [text, setText] = useState('');
   const [showRating, setShowRating] = useState(false);
   const [attachFile, setAttachFile] = useState(null);
@@ -187,7 +202,7 @@ function TicketChat({ ticket, onBack, onSend, onRate }) {
           <ChevronLeft size={20} color="#0A84FF" />
         </button>
         <div className="flex-1">
-          <div className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>#{ticket.id?.slice(-6)} {ticket.subject}</div>
+          <div className="text-sm font-semibold" style={{ color: primaryText }}>#{ticket.id?.slice(-6)} {ticket.subject}</div>
           <div className="text-xs" style={{ color: statusColor(ticket.status) }}>{statusLabel(ticket.status)}</div>
         </div>
         {isClosed && !alreadyRated && (
@@ -217,8 +232,8 @@ function TicketChat({ ticket, onBack, onSend, onRate }) {
               style={{
                 background: msg.sender === 'user'
                   ? 'linear-gradient(135deg, #0A84FF, #5E5CE6)'
-                  : 'rgba(44,44,46,0.8)',
-                color: '#F5F5F7',
+                  : (theme === 'light' ? 'rgba(0,0,0,0.07)' : 'rgba(44,44,46,0.8)'),
+                color: msg.sender === 'user' ? '#ffffff' : (theme === 'light' ? '#1C1C1E' : '#F5F5F7'),
               }}
             >
               {msg.text && <div style={{ whiteSpace: 'pre-line' }}>{msg.text}</div>}
@@ -249,9 +264,9 @@ function TicketChat({ ticket, onBack, onSend, onRate }) {
             <button
               onClick={() => fileInputRef.current?.click()}
               className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(44,44,46,0.8)', border: '1px solid rgba(255,255,255,0.08)' }}
+              style={{ background: btnBg, border: btnBorder }}
             >
-              <Paperclip size={15} color="#98989D" />
+              <Paperclip size={15} color={secondaryText} />
             </button>
             <input
               ref={fileInputRef}
@@ -265,7 +280,7 @@ function TicketChat({ ticket, onBack, onSend, onRate }) {
               onKeyDown={e => e.key === 'Enter' && handleSend()}
               placeholder="Написать сообщение..."
               className="flex-1 px-4 py-3 rounded-2xl text-sm outline-none"
-              style={{ background: 'rgba(44,44,46,0.8)', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.08)' }}
+              style={{ background: inputBg, color: primaryText, border: inputBorder }}
             />
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -290,6 +305,16 @@ function TicketChat({ ticket, onBack, onSend, onRate }) {
 }
 
 export default function TabSupport() {
+  const { theme } = useApp();
+  const isLight = theme === 'light';
+
+  const primaryText = isLight ? '#1C1C1E' : '#F5F5F7';
+  const secondaryText = isLight ? '#636366' : '#98989D';
+  const cardBg = isLight ? 'rgba(255,255,255,0.9)' : 'rgba(28,28,30,0.8)';
+  const cardBorder = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.07)';
+  const inputBg = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(44,44,46,0.8)';
+  const inputBorder = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)';
+
   const [view, setView] = useState('main');
   const [flowKey, setFlowKey] = useState(null);
   const [stepIdx, setStepIdx] = useState(0);
@@ -407,8 +432,8 @@ export default function TabSupport() {
           <motion.div key="main" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={springConfig}>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold" style={{ color: '#F5F5F7' }}>Поддержка</h2>
-                <p className="text-xs mt-0.5" style={{ color: '#98989D' }}>Мы ответим в течение нескольких минут</p>
+                <h2 className="text-xl font-bold" style={{ color: primaryText }}>Поддержка</h2>
+                <p className="text-xs mt-0.5" style={{ color: secondaryText }}>Мы ответим в течение нескольких минут</p>
               </div>
               {tickets.length > 0 && (
                 <motion.button
@@ -423,7 +448,7 @@ export default function TabSupport() {
               )}
             </div>
 
-            <p className="text-sm font-semibold mb-3" style={{ color: '#98989D' }}>Выберите тему обращения</p>
+            <p className="text-sm font-semibold mb-3" style={{ color: secondaryText }}>Выберите тему обращения</p>
 
             <div className="space-y-2 mb-4">
               {Object.entries(FLOWS).map(([key, flow]) => (
@@ -432,35 +457,35 @@ export default function TabSupport() {
                   whileTap={{ scale: 0.97 }}
                   onClick={() => { setFlowKey(key); setStepIdx(0); setAnswers({}); setView('flow'); }}
                   className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-left"
-                  style={{ background: 'rgba(28,28,30,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+                  style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{flow.icon}</span>
-                    <span className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{flow.label}</span>
+                    <span className="text-sm font-medium" style={{ color: primaryText }}>{flow.label}</span>
                   </div>
-                  <ChevronRight size={16} color="#98989D" />
+                  <ChevronRight size={16} color={secondaryText} />
                 </motion.button>
               ))}
             </div>
 
             <div className="mt-2">
-              <p className="text-xs mb-2" style={{ color: '#98989D' }}>Или напишите свой вопрос:</p>
+              <p className="text-xs mb-2" style={{ color: secondaryText }}>Или напишите свой вопрос:</p>
               <textarea
                 value={customText}
                 onChange={e => setCustomText(e.target.value)}
                 placeholder="Опишите вашу проблему..."
                 rows={3}
                 className="w-full px-4 py-3 rounded-2xl text-sm resize-none outline-none"
-                style={{ background: 'rgba(44,44,46,0.8)', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.08)' }}
+                style={{ background: inputBg, color: primaryText, border: `1px solid ${inputBorder}` }}
               />
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => { setFlowKey(null); setView('final'); }}
                 disabled={!customText.trim()}
-                className="w-full mt-2 py-3.5 rounded-2xl font-semibold text-white text-sm"
+                className="w-full mt-2 py-3.5 rounded-2xl font-semibold text-sm"
                 style={{
-                  background: customText.trim() ? 'linear-gradient(135deg, #0A84FF, #5E5CE6)' : 'rgba(44,44,46,0.8)',
-                  color: customText.trim() ? 'white' : '#98989D',
+                  background: customText.trim() ? 'linear-gradient(135deg, #0A84FF, #5E5CE6)' : (isLight ? 'rgba(0,0,0,0.08)' : 'rgba(44,44,46,0.8)'),
+                  color: customText.trim() ? 'white' : secondaryText,
                 }}
               >
                 Отправить вопрос
@@ -477,16 +502,16 @@ export default function TabSupport() {
                 <ChevronLeft size={20} color="#0A84FF" />
               </button>
               <div>
-                <div className="text-lg font-bold" style={{ color: '#F5F5F7' }}>{currentFlow.label}</div>
+                <div className="text-lg font-bold" style={{ color: primaryText }}>{currentFlow.label}</div>
                 {currentFlow.steps.length > 0 && (
-                  <div className="text-xs" style={{ color: '#98989D' }}>Шаг {stepIdx + 1} из {currentFlow.steps.length}</div>
+                  <div className="text-xs" style={{ color: secondaryText }}>Шаг {stepIdx + 1} из {currentFlow.steps.length}</div>
                 )}
               </div>
             </div>
 
             {currentStep && (
               <>
-                <p className="text-base font-semibold mb-4" style={{ color: '#F5F5F7' }}>{currentStep.question}</p>
+                <p className="text-base font-semibold mb-4" style={{ color: primaryText }}>{currentStep.question}</p>
                 <div className="space-y-2">
                   {currentStep.options.map(opt => (
                     <motion.button
@@ -494,10 +519,10 @@ export default function TabSupport() {
                       whileTap={{ scale: 0.97 }}
                       onClick={() => handleOption(opt)}
                       className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-left"
-                      style={{ background: 'rgba(28,28,30,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+                      style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
                     >
-                      <span className="text-sm" style={{ color: '#F5F5F7' }}>{opt}</span>
-                      <ChevronRight size={15} color="#98989D" />
+                      <span className="text-sm" style={{ color: primaryText }}>{opt}</span>
+                      <ChevronRight size={15} color={secondaryText} />
                     </motion.button>
                   ))}
                 </div>
@@ -513,15 +538,15 @@ export default function TabSupport() {
               <button onClick={() => { if (flowKey && currentFlow?.steps.length) setView('flow'); else setView('main'); }}>
                 <ChevronLeft size={20} color="#0A84FF" />
               </button>
-              <div className="text-lg font-bold" style={{ color: '#F5F5F7' }}>Подтверждение</div>
+              <div className="text-lg font-bold" style={{ color: primaryText }}>Подтверждение</div>
             </div>
 
-            <div className="p-4 rounded-2xl mb-4" style={{ background: 'rgba(28,28,30,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="text-xs font-semibold mb-2" style={{ color: '#98989D' }}>Тема: {currentFlow?.label || 'Свободный вопрос'}</p>
+            <div className="p-4 rounded-2xl mb-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+              <p className="text-xs font-semibold mb-2" style={{ color: secondaryText }}>Тема: {currentFlow?.label || 'Свободный вопрос'}</p>
               {Object.entries(answers).map(([k, v]) => (
-                <div key={k} className="text-sm py-1" style={{ color: '#F5F5F7' }}>• {v}</div>
+                <div key={k} className="text-sm py-1" style={{ color: primaryText }}>• {v}</div>
               ))}
-              {customText && <div className="text-sm py-1" style={{ color: '#F5F5F7' }}>• {customText}</div>}
+              {customText && <div className="text-sm py-1" style={{ color: primaryText }}>• {customText}</div>}
             </div>
 
             <textarea
@@ -530,7 +555,7 @@ export default function TabSupport() {
               placeholder="Добавьте дополнительные детали (необязательно)..."
               rows={3}
               className="w-full px-4 py-3 rounded-2xl text-sm resize-none outline-none mb-3"
-              style={{ background: 'rgba(44,44,46,0.8)', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.08)' }}
+              style={{ background: inputBg, color: primaryText, border: `1px solid ${inputBorder}` }}
             />
 
             <motion.button
@@ -554,12 +579,12 @@ export default function TabSupport() {
               <button onClick={() => setView('main')}>
                 <ChevronLeft size={20} color="#0A84FF" />
               </button>
-              <div className="text-lg font-bold" style={{ color: '#F5F5F7' }}>Мои обращения</div>
+              <div className="text-lg font-bold" style={{ color: primaryText }}>Мои обращения</div>
             </div>
 
             <div className="space-y-2 mb-4">
               {tickets.length === 0 && (
-                <p className="text-center text-sm py-8" style={{ color: '#98989D' }}>Нет обращений</p>
+                <p className="text-center text-sm py-8" style={{ color: secondaryText }}>Нет обращений</p>
               )}
               {tickets.map(t => (
                 <motion.button
@@ -567,18 +592,18 @@ export default function TabSupport() {
                   whileTap={{ scale: 0.97 }}
                   onClick={() => openTicket(t)}
                   className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-left"
-                  style={{ background: 'rgba(28,28,30,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+                  style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-xs font-mono" style={{ color: '#98989D' }}>#{t.id?.slice(-6)}</span>
+                      <span className="text-xs font-mono" style={{ color: secondaryText }}>#{t.id?.slice(-6)}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${statusColor(t.status)}22`, color: statusColor(t.status) }}>{statusLabel(t.status)}</span>
                       {t.rating > 0 && <span className="text-xs ml-auto" style={{ color: '#FFD60A' }}>{'★'.repeat(t.rating)}</span>}
                     </div>
-                    <div className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{t.subject}</div>
-                    <div className="text-xs mt-0.5" style={{ color: '#98989D' }}>{categoryLabel(t.category)}</div>
+                    <div className="text-sm font-medium" style={{ color: primaryText }}>{t.subject}</div>
+                    <div className="text-xs mt-0.5" style={{ color: secondaryText }}>{categoryLabel(t.category)}</div>
                   </div>
-                  <ChevronRight size={15} color="#98989D" />
+                  <ChevronRight size={15} color={secondaryText} />
                 </motion.button>
               ))}
             </div>

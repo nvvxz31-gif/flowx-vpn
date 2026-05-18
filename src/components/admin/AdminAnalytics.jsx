@@ -33,20 +33,21 @@ export default function AdminAnalytics() {
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-start justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex items-start justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Аналитика</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Аналитика</h1>
           <p className="text-sm" style={{ color: '#98989D' }}>Отчёты о продажах и использовании</p>
         </div>
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={() => setShowAIModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+          className="flex items-center gap-2 px-3 md:px-4 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0"
           style={{ background: 'linear-gradient(135deg, rgba(10,132,255,0.15), rgba(94,92,230,0.15))', color: '#0A84FF', border: '1px solid rgba(10,132,255,0.25)' }}
         >
           <span>✨</span>
-          Выгрузить для ИИ
+          <span className="hidden sm:inline">Выгрузить для ИИ</span>
+          <span className="sm:hidden">ИИ</span>
         </motion.button>
       </div>
 

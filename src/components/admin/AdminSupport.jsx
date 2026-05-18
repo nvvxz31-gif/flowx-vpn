@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, RefreshCw, Search, Paperclip, Star } from 'lucide-react';
+import { Send, RefreshCw, Search, Paperclip, Star, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
@@ -85,7 +85,7 @@ export default function AdminSupport() {
   return (
     <div className="flex h-full" style={{ height: 'calc(100vh - 0px)' }}>
       {/* Left panel */}
-      <div className="w-80 flex flex-col flex-shrink-0 border-r" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+      <div className={`${selected ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col flex-shrink-0 border-r`} style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
         <div className="p-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-bold" style={{ color: '#F5F5F7' }}>Поддержка</h2>
@@ -164,7 +164,7 @@ export default function AdminSupport() {
       </div>
 
       {/* Right panel */}
-      <div className="flex-1 flex flex-col">
+      <div className={`${selected ? 'flex' : 'hidden md:flex'} flex-1 flex-col`}>
         {!selected ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
@@ -175,8 +175,12 @@ export default function AdminSupport() {
         ) : (
           <>
             {/* Header */}
-            <div className="p-4 border-b flex items-start justify-between" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-              <div>
+            <div className="p-4 border-b flex items-start justify-between gap-2" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+              <div className="flex items-start gap-2 min-w-0 flex-1">
+                <button onClick={() => setSelected(null)} className="md:hidden flex-shrink-0 mt-0.5 p-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <ArrowLeft size={16} color="#98989D" />
+                </button>
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-mono" style={{ color: '#98989D' }}>#{selected.id?.slice(-6)}</span>
                   <span className="text-xs">{categoryLabel(selected.category)}</span>
@@ -197,6 +201,7 @@ export default function AdminSupport() {
                     ))}
                   </div>
                 )}
+              </div>
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">

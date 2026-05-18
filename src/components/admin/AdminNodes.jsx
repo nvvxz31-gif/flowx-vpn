@@ -21,18 +21,19 @@ export default function AdminNodes() {
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-start justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex items-start justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Ноды</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Ноды</h1>
           <p className="text-sm" style={{ color: '#98989D' }}>Управление серверной инфраструктурой</p>
         </div>
         <button
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium"
+          className="flex items-center gap-2 px-3 md:px-4 py-2.5 rounded-xl text-sm font-medium flex-shrink-0"
           style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)', color: 'white' }}
         >
           <Plus size={14} />
-          Добавить ноду
+          <span className="hidden sm:inline">Добавить ноду</span>
+          <span className="sm:hidden">Добавить</span>
         </button>
       </div>
 

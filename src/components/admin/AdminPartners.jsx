@@ -25,9 +25,9 @@ const statusConfig = {
 
 export default function AdminPartners() {
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Партнёрская программа</h1>
+    <div className="p-4 md:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ color: '#F5F5F7', letterSpacing: '-0.02em' }}>Партнёрская программа</h1>
         <p className="text-sm" style={{ color: '#98989D' }}>Статистика партнёров и заявки на вывод</p>
       </div>
 
@@ -51,8 +51,8 @@ export default function AdminPartners() {
         ))}
       </div>
 
-      {/* Partners table */}
-      <div className="glass-card rounded-2xl overflow-hidden mb-6">
+      {/* Partners table desktop */}
+      <div className="glass-card rounded-2xl overflow-hidden mb-6 hidden md:block">
         <div className="px-5 py-3 text-sm font-semibold border-b" style={{ color: '#F5F5F7', borderColor: 'rgba(255,255,255,0.06)' }}>
           Топ партнёры
         </div>
@@ -63,13 +63,30 @@ export default function AdminPartners() {
           <span>Доход</span>
           <span>Выплачено</span>
         </div>
-        {partners.map((p, i) => (
+        {partners.map((p) => (
           <div key={p.id} className="grid grid-cols-5 gap-4 px-5 py-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
             <span className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{p.username}</span>
             <span className="text-sm font-mono" style={{ color: '#0A84FF' }}>{p.referrals}</span>
             <span className="text-sm font-mono" style={{ color: '#98989D' }}>{p.conversions}</span>
             <span className="text-sm font-mono font-bold" style={{ color: '#30D158' }}>₽ {p.revenue.toLocaleString()}</span>
             <span className="text-sm font-mono" style={{ color: '#98989D' }}>₽ {p.paid.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+      {/* Partners cards mobile */}
+      <div className="flex flex-col gap-3 mb-6 md:hidden">
+        <div className="text-sm font-semibold mb-1" style={{ color: '#F5F5F7' }}>Топ партнёры</div>
+        {partners.map((p) => (
+          <div key={p.id} className="glass-card p-4 rounded-2xl">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium" style={{ color: '#F5F5F7' }}>{p.username}</span>
+              <span className="text-sm font-mono font-bold" style={{ color: '#30D158' }}>₽ {p.revenue.toLocaleString()}</span>
+            </div>
+            <div className="flex gap-4 text-xs" style={{ color: '#98989D' }}>
+              <span>Переходов: <span style={{ color: '#0A84FF' }}>{p.referrals}</span></span>
+              <span>Рег: {p.conversions}</span>
+              <span>Выплачено: ₽{p.paid.toLocaleString()}</span>
+            </div>
           </div>
         ))}
       </div>
