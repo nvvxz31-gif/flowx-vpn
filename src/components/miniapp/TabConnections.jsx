@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, HelpCircle, ChevronDown, X } from 'lucide-react';
+import { Zap, HelpCircle, ChevronDown, X, Download } from 'lucide-react';
 import ServerGlobe from './ServerGlobe';
 
 const faq = [
@@ -11,53 +11,150 @@ const faq = [
 ];
 
 const platforms = [
-  { name: 'iOS', icon: '🍎', app: 'Happ' },
-  { name: 'Android', icon: '🤖', app: 'V2Ray' },
-  { name: 'Windows', icon: '🪟', app: 'Incy' },
-  { name: 'macOS', icon: '🖥️', app: 'Happ' },
+  { name: 'iOS', icon: '🍎', platform: 'iPhone / iPad' },
+  { name: 'Android', icon: '🤖', platform: 'Android' },
+  { name: 'Windows', icon: '🪟', platform: 'Windows' },
+  { name: 'macOS', icon: '🖥️', platform: 'macOS' },
 ];
 
 const appGuides = {
   Happ: {
     title: 'Happ',
     icon: 'https://media.base44.com/images/public/6a088498feb97a4eaded517d/47e2ae396_OIP.webp',
-    steps: [
-      'Скачайте Happ из App Store (iOS) или Google Play (Android)',
-      'Откройте приложение и нажмите «+» в правом верхнем углу',
-      'Выберите «Импорт из буфера обмена» или «Сканировать QR-код»',
-      'Перейдите в раздел «Подключения» нашего сервиса и скопируйте конфиг',
-      'Вернитесь в Happ — конфиг будет добавлен автоматически',
-      'Нажмите на сервер и нажмите «Подключить»',
-      '✅ Готово! VPN активен',
-    ],
+    downloadLinks: {
+      'iPhone / iPad': 'https://apps.apple.com/app/happ-proxy-utility/id6504287215',
+      Android: 'https://play.google.com/store/apps/details?id=com.happproxy.app',
+      Windows: 'https://github.com/happproxy/happ/releases',
+      macOS: 'https://apps.apple.com/app/happ-proxy-utility/id6504287215',
+    },
+    steps: {
+      'iPhone / iPad': [
+        'Скачайте Happ из App Store',
+        'Откройте приложение и нажмите «+» в правом верхнем углу',
+        'Выберите «Импорт из буфера обмена»',
+        'Перейдите в раздел «Подключения» и скопируйте конфиг',
+        'Вернитесь в Happ — конфиг добавится автоматически',
+        'Нажмите на сервер и выберите «Подключить»',
+        '✅ Готово! VPN активен',
+      ],
+      Android: [
+        'Скачайте Happ из Google Play',
+        'Откройте приложение и нажмите «+» вверху',
+        'Выберите «Импорт из буфера обмена»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Вернитесь в Happ — конфиг добавится автоматически',
+        'Нажмите на сервер и выберите «Подключить»',
+        '✅ Готово! VPN активен',
+      ],
+      Windows: [
+        'Скачайте Happ для Windows с официального сайта',
+        'Установите приложение и запустите',
+        'Нажмите «+» или «Добавить конфиг»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Вставьте ссылку — конфиг появится в списке',
+        'Выберите сервер и нажмите «Подключить»',
+        '✅ Happ активен на Windows!',
+      ],
+      macOS: [
+        'Скачайте Happ из Mac App Store',
+        'Откройте приложение, нажмите «+»',
+        'Выберите «Импорт из буфера обмена»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Конфиг добавится в список автоматически',
+        'Нажмите на сервер → «Подключить»',
+        '✅ Happ активен на macOS!',
+      ],
+    },
   },
   V2Ray: {
     title: 'V2Ray',
     icon: 'https://media.base44.com/images/public/6a088498feb97a4eaded517d/163bafa00_image.png',
-    steps: [
-      'Скачайте V2RayNG (Android) или V2Box (iOS) из магазина приложений',
-      'Откройте приложение и нажмите «+»',
-      'Выберите «Импорт config из буфера»',
-      'Скопируйте конфигурационную ссылку из раздела «Подключения»',
-      'Вставьте ссылку — сервер добавится в список',
-      'Нажмите на сервер для выбора, затем нажмите кнопку запуска ▶',
-      'Разрешите запрос VPN-соединения',
-      '✅ V2Ray активен!',
-    ],
+    downloadLinks: {
+      'iPhone / iPad': 'https://apps.apple.com/app/v2box-v2ray-client/id6446814690',
+      Android: 'https://play.google.com/store/apps/details?id=com.v2ray.ang',
+      Windows: 'https://github.com/2dust/v2rayN/releases',
+      macOS: 'https://github.com/Cenmrev/V2RayX/releases',
+    },
+    steps: {
+      'iPhone / iPad': [
+        'Скачайте V2Box из App Store',
+        'Откройте приложение и нажмите «+»',
+        'Выберите «Импорт из буфера обмена»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Сервер появится в списке — нажмите на него',
+        'Нажмите ▶ для подключения и разрешите VPN',
+        '✅ V2Box активен!',
+      ],
+      Android: [
+        'Скачайте V2RayNG из Google Play',
+        'Откройте приложение и нажмите «+»',
+        'Выберите «Импорт config из буфера»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Сервер добавится в список — выберите его',
+        'Нажмите ▶ и разрешите запрос VPN-соединения',
+        '✅ V2RayNG активен!',
+      ],
+      Windows: [
+        'Скачайте V2RayN с GitHub или официального сайта',
+        'Распакуйте архив и запустите v2rayN.exe',
+        'Нажмите «Серверы» → «Добавить сервер Vmess/Vless»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Вставьте ссылку через «Импорт из буфера»',
+        'Кликните правой кнопкой на иконку в трее → «Включить»',
+        '✅ V2RayN активен!',
+      ],
+      macOS: [
+        'Скачайте V2RayXS или V2Box для macOS',
+        'Откройте приложение и перейдите в «Серверы»',
+        'Нажмите «+» → «Добавить из буфера»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Сервер появится в списке — выберите его',
+        'Нажмите «Подключить» и разрешите VPN',
+        '✅ V2Ray активен на macOS!',
+      ],
+    },
   },
   Incy: {
     title: 'Incy',
     icon: 'https://media.base44.com/images/public/6a088498feb97a4eaded517d/3b7573844_image.png',
-    steps: [
-      'Скачайте Incy для вашей платформы (Windows/macOS/Linux)',
-      'Установите приложение и запустите его',
-      'Нажмите «Добавить сервер» или кнопку «+»',
-      'Выберите «Вставить из буфера обмена»',
-      'Скопируйте конфиг из раздела «Подключения» нашего сервиса',
-      'Конфиг появится в списке серверов',
-      'Выберите нужный сервер и нажмите «Подключить»',
-      '✅ Incy готов к работе!',
-    ],
+    steps: {
+      'iPhone / iPad': [
+        'Скачайте Incy из App Store',
+        'Откройте приложение и нажмите «+»',
+        'Выберите «Вставить из буфера обмена»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Конфиг появится в списке серверов',
+        'Выберите сервер и нажмите «Подключить»',
+        '✅ Incy готов!',
+      ],
+      Android: [
+        'Скачайте Incy из Google Play',
+        'Откройте приложение и нажмите «+»',
+        'Выберите «Импорт из буфера обмена»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Сервер появится в списке — выберите его',
+        'Нажмите «Подключить» и разрешите VPN',
+        '✅ Incy активен!',
+      ],
+      Windows: [
+        'Скачайте Incy для Windows с официального сайта',
+        'Установите и запустите приложение',
+        'Нажмите «Добавить сервер» или кнопку «+»',
+        'Выберите «Вставить из буфера обмена»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Выберите сервер и нажмите «Подключить»',
+        '✅ Incy готов на Windows!',
+      ],
+      macOS: [
+        'Скачайте Incy из Mac App Store или с сайта',
+        'Запустите приложение',
+        'Нажмите «+» → «Импорт конфига»',
+        'Скопируйте конфиг из раздела «Подключения»',
+        'Конфиг добавится в список',
+        'Выберите сервер и нажмите «Подключить»',
+        '✅ Incy готов на macOS!',
+      ],
+    },
   },
 };
 
@@ -77,7 +174,9 @@ export default function TabConnections() {
   const [selectedServer, setSelectedServer] = useState(servers[0]);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [showServerList, setShowServerList] = useState(false);
-  const [activeGuide, setActiveGuide] = useState(null);
+  const [activePlatform, setActivePlatform] = useState(null); // platform string, показывает выбор приложения
+  const [activeGuide, setActiveGuide] = useState(null); // { title, icon, steps: [] }
+  const [guidePlatform, setGuidePlatform] = useState(null);
   const usedGb = 12.4;
   const totalGb = 50;
   const usedPercent = (usedGb / totalGb) * 100;
@@ -240,21 +339,63 @@ export default function TabConnections() {
 
         {/* Platforms */}
         <div className="grid grid-cols-4 gap-2 mb-3">
-          {platforms.map((p) => {
-            const guide = appGuides[p.app];
-            return (
-              <button
-                key={p.name}
-                onClick={() => guide && setActiveGuide(guide)}
-                className="glass-card p-3 rounded-2xl text-center"
-              >
-                <div className="text-xl mb-1">{p.icon}</div>
-                <div className="text-xs font-medium" style={{ color: '#F5F5F7' }}>{p.name}</div>
-                <div className="text-xs" style={{ color: '#0A84FF', fontSize: '9px' }}>{p.app} →</div>
-              </button>
-            );
-          })}
+          {platforms.map((p) => (
+            <button
+              key={p.name}
+              onClick={() => setActivePlatform(p.platform)}
+              className="glass-card p-3 rounded-2xl text-center"
+              style={{ border: activePlatform === p.platform ? '1px solid rgba(10,132,255,0.4)' : undefined }}
+            >
+              <div className="text-xl mb-1">{p.icon}</div>
+              <div className="text-xs font-medium" style={{ color: '#F5F5F7' }}>{p.name}</div>
+              <div className="text-xs mt-0.5" style={{ color: '#98989D', fontSize: '9px' }}>Happ · V2Ray</div>
+            </button>
+          ))}
         </div>
+
+        {/* App picker for selected platform */}
+        <AnimatePresence>
+          {activePlatform && (
+            <motion.div
+              key={activePlatform}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="mb-3 p-3 rounded-2xl"
+              style={{ background: 'rgba(28,28,30,0.7)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
+              <p className="text-xs mb-2" style={{ color: '#98989D' }}>Выберите приложение для <span style={{ color: '#F5F5F7' }}>{activePlatform}</span></p>
+              <div className="grid grid-cols-2 gap-2">
+                {['Happ', 'V2Ray'].map(appName => {
+                  const g = appGuides[appName];
+                  return (
+                    <motion.button
+                      key={appName}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        setActiveGuide({
+                          title: g.title,
+                          icon: g.icon,
+                          steps: g.steps[activePlatform] || Object.values(g.steps)[0],
+                          downloadUrl: g.downloadLinks?.[activePlatform],
+                        });
+                        setActivePlatform(null);
+                      }}
+                      className="flex items-center justify-center px-3 py-2.5 rounded-2xl"
+                      style={{ background: 'rgba(44,44,46,0.6)', border: '1px solid rgba(255,255,255,0.07)' }}
+                    >
+                      <div className="text-center">
+                        <div className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>{appName}</div>
+                        <div className="text-xs" style={{ color: '#0A84FF', fontSize: '9px' }}>Инструкция →</div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* FAQ */}
         <div className="flex flex-col gap-2 mb-3">
@@ -312,13 +453,12 @@ export default function TabConnections() {
               className="fixed bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl overflow-y-auto"
               style={{ background: 'rgba(22,22,24,0.99)', border: '1px solid rgba(255,255,255,0.1)', maxHeight: '85vh' }}
             >
-              <div className="flex items-center gap-3 mb-5">
-                <img src={activeGuide.icon} alt={activeGuide.title} className="w-10 h-10 rounded-xl object-cover" />
+              <div className="flex items-center justify-between mb-5">
                 <div>
                   <h3 className="text-lg font-bold" style={{ color: '#F5F5F7' }}>Настройка {activeGuide.title}</h3>
                   <p className="text-xs" style={{ color: '#98989D' }}>Пошаговая инструкция</p>
                 </div>
-                <button onClick={() => setActiveGuide(null)} className="ml-auto">
+                <button onClick={() => setActiveGuide(null)}>
                   <X size={20} color="#98989D" />
                 </button>
               </div>
@@ -329,7 +469,7 @@ export default function TabConnections() {
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    transition={{ delay: i * 0.04 }}
                     className="flex items-start gap-3 p-3.5 rounded-2xl"
                     style={{ background: 'rgba(44,44,46,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
                   >
@@ -344,10 +484,23 @@ export default function TabConnections() {
                 ))}
               </div>
 
+              {activeGuide.downloadUrl && (
+                <a
+                  href={activeGuide.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full mt-5 py-3.5 rounded-2xl font-semibold"
+                  style={{ background: 'rgba(10,132,255,0.12)', border: '1px solid rgba(10,132,255,0.3)', color: '#0A84FF' }}
+                >
+                  <Download size={16} />
+                  Скачать {activeGuide.title}
+                </a>
+              )}
+
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setActiveGuide(null)}
-                className="w-full mt-5 py-4 rounded-2xl font-semibold text-white"
+                className="w-full mt-3 py-4 rounded-2xl font-semibold text-white"
                 style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)' }}
               >
                 Понятно, спасибо!

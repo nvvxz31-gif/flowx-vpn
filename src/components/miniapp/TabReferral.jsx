@@ -1,19 +1,48 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Copy, Check, TrendingUp, Users, DollarSign, ArrowUpRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Copy, Check, TrendingUp, Users, DollarSign, ArrowUpRight, X, Download, Image } from 'lucide-react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
 
-const chartData = [
-  { day: 'Пн', revenue: 450 },
-  { day: 'Вт', revenue: 720 },
-  { day: 'Ср', revenue: 380 },
-  { day: 'Чт', revenue: 920 },
-  { day: 'Пт', revenue: 650 },
-  { day: 'Сб', revenue: 1100 },
-  { day: 'Вс', revenue: 840 },
-];
+const dataByPeriod = {
+  day: [
+    { label: '00:00', revenue: 120 },
+    { label: '04:00', revenue: 80 },
+    { label: '08:00', revenue: 200 },
+    { label: '12:00', revenue: 350 },
+    { label: '16:00', revenue: 420 },
+    { label: '20:00', revenue: 280 },
+  ],
+  week: [
+    { label: 'Пн', revenue: 450 },
+    { label: 'Вт', revenue: 720 },
+    { label: 'Ср', revenue: 380 },
+    { label: 'Чт', revenue: 920 },
+    { label: 'Пт', revenue: 650 },
+    { label: 'Сб', revenue: 1100 },
+    { label: 'Вс', revenue: 840 },
+  ],
+  month: [
+    { label: '1', revenue: 300 },
+    { label: '5', revenue: 650 },
+    { label: '10', revenue: 480 },
+    { label: '15', revenue: 920 },
+    { label: '20', revenue: 750 },
+    { label: '25', revenue: 1200 },
+    { label: '30', revenue: 880 },
+  ],
+  all: [
+    { label: 'Янв', revenue: 1200 },
+    { label: 'Фев', revenue: 1800 },
+    { label: 'Мар', revenue: 2400 },
+    { label: 'Апр', revenue: 2100 },
+    { label: 'Май', revenue: 3200 },
+    { label: 'Июн', revenue: 2800 },
+  ],
+};
+
+const periodLabels = { day: 'Сегодня', week: 'Эта неделя', month: 'Этот месяц', all: 'Всё время' };
 
 const stats = [
   { label: 'Переходы', value: '248', icon: TrendingUp, color: '#0A84FF' },
@@ -21,9 +50,18 @@ const stats = [
   { label: 'Доход', value: '₽ 4 650', icon: DollarSign, color: '#30D158' },
 ];
 
+const WITHDRAW_METHODS = [
+  { id: 'cryptobot', label: 'CryptoBot', icon: '🤖' },
+  { id: 'usdt', label: 'USDT TRC20', icon: '💎' },
+  { id: 'btc', label: 'Bitcoin', icon: '₿' },
+  { id: 'eth', label: 'Ethereum', icon: '⟠' },
+];
+
 export default function TabReferral() {
   const [copied, setCopied] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState('week');
+  const [selectedMethod, setSelectedMethod] = useState('cryptobot');
   const refLink = 'https://t.me/flowxvpn_bot?start=ref_u7x9k';
 
   const handleCopy = () => {
@@ -31,6 +69,8 @@ export default function TabReferral() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const chartData = dataByPeriod[selectedPeriod];
 
   return (
     <div className="px-4 pt-16 pb-4">
@@ -42,7 +82,36 @@ export default function TabReferral() {
       >
         Партнёрская программа
       </motion.h1>
-      <p className="text-sm mb-6" style={{ color: '#98989D' }}>Зарабатывай с FlowX VPN</p>
+      <p className="text-sm mb-4" style={{ color: '#98989D' }}>Зарабатывай с FlowX VPN</p>
+
+      {/* RefShare info card */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 rounded-3xl mb-5"
+        style={{ background: 'linear-gradient(135deg, rgba(10,132,255,0.1), rgba(94,92,230,0.1))', border: '1px solid rgba(10,132,255,0.25)' }}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-xl">💎</span>
+          <span className="text-sm font-bold" style={{ color: '#0A84FF' }}>RefShare 50%</span>
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(48,209,88,0.15)', color: '#30D158' }}>Активно</span>
+        </div>
+        <p className="text-xs leading-relaxed mb-3" style={{ color: '#98989D' }}>
+          Вы получаете <span style={{ color: '#F5F5F7', fontWeight: 600 }}>50% комиссии</span> со всех пополнений баланса пользователей, которые зарегистрировались по вашей ссылке. Начисление — мгновенно при каждом пополнении.
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: 'Комиссия', value: '50%' },
+            { label: 'Выплата', value: 'от ₽500' },
+            { label: 'Зачисление', value: 'Сразу' },
+          ].map(({ label, value }) => (
+            <div key={label} className="text-center p-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
+              <div className="text-sm font-bold" style={{ color: '#F5F5F7' }}>{value}</div>
+              <div className="text-xs" style={{ color: '#98989D' }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-5">
@@ -54,10 +123,7 @@ export default function TabReferral() {
             transition={{ ...springConfig, delay: i * 0.07 }}
             className="glass-card p-3 rounded-2xl"
           >
-            <div
-              className="w-7 h-7 rounded-xl flex items-center justify-center mb-2"
-              style={{ background: `${stat.color}20` }}
-            >
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center mb-2" style={{ background: `${stat.color}20` }}>
               <stat.icon size={14} color={stat.color} />
             </div>
             <div className="text-base font-bold font-mono" style={{ color: '#F5F5F7' }}>{stat.value}</div>
@@ -74,8 +140,23 @@ export default function TabReferral() {
         className="glass-card p-4 rounded-3xl mb-5"
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>Доход по дням</span>
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(10,132,255,0.15)', color: '#0A84FF' }}>Эта неделя</span>
+          <span className="text-sm font-semibold" style={{ color: '#F5F5F7' }}>Доход</span>
+          <div className="flex gap-1">
+            {Object.entries(periodLabels).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedPeriod(key)}
+                className="text-xs px-2 py-0.5 rounded-full transition-all"
+                style={{
+                  background: selectedPeriod === key ? 'rgba(10,132,255,0.25)' : 'transparent',
+                  color: selectedPeriod === key ? '#0A84FF' : '#98989D',
+                  border: selectedPeriod === key ? '1px solid rgba(10,132,255,0.4)' : '1px solid transparent',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
         <ResponsiveContainer width="100%" height={120}>
           <AreaChart data={chartData}>
@@ -85,18 +166,12 @@ export default function TabReferral() {
                 <stop offset="95%" stopColor="#0A84FF" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="day" tick={{ fill: '#98989D', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <XAxis dataKey="label" tick={{ fill: '#98989D', fontSize: 10 }} axisLine={false} tickLine={false} />
             <Tooltip
               contentStyle={{ background: 'rgba(28,28,30,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: '#F5F5F7', fontSize: 12 }}
               cursor={false}
             />
-            <Area
-              type="monotone"
-              dataKey="revenue"
-              stroke="#0A84FF"
-              strokeWidth={2}
-              fill="url(#refGrad)"
-            />
+            <Area type="monotone" dataKey="revenue" stroke="#0A84FF" strokeWidth={2} fill="url(#refGrad)" />
           </AreaChart>
         </ResponsiveContainer>
       </motion.div>
@@ -110,10 +185,7 @@ export default function TabReferral() {
       >
         <div className="text-xs mb-2 font-medium" style={{ color: '#98989D' }}>Ваша реферальная ссылка</div>
         <div className="flex items-center gap-2">
-          <div
-            className="flex-1 px-3 py-2 rounded-xl text-xs font-mono truncate"
-            style={{ background: 'rgba(255,255,255,0.05)', color: '#0A84FF', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
+          <div className="flex-1 px-3 py-2 rounded-xl text-xs font-mono truncate" style={{ background: 'rgba(255,255,255,0.05)', color: '#0A84FF', border: '1px solid rgba(255,255,255,0.08)' }}>
             {refLink}
           </div>
           <motion.button
@@ -125,6 +197,34 @@ export default function TabReferral() {
             {copied ? <Check size={14} color="#30D158" /> : <Copy size={14} color="#0A84FF" />}
           </motion.button>
         </div>
+      </motion.div>
+
+      {/* Banner download */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="glass-card p-4 rounded-2xl mb-4"
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Image size={14} color="#5E5CE6" />
+          <span className="text-xs font-semibold" style={{ color: '#F5F5F7' }}>Баннеры для залива трафика</span>
+        </div>
+        <div
+          className="w-full h-20 rounded-2xl flex flex-col items-center justify-center mb-3"
+          style={{ background: 'rgba(94,92,230,0.08)', border: '2px dashed rgba(94,92,230,0.3)' }}
+        >
+          <Image size={24} color="rgba(94,92,230,0.4)" />
+          <span className="text-xs mt-1" style={{ color: '#98989D' }}>Баннеры будут добавлены</span>
+        </div>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2"
+          style={{ background: 'rgba(94,92,230,0.15)', color: '#5E5CE6', border: '1px solid rgba(94,92,230,0.3)' }}
+        >
+          <Download size={14} />
+          Скачать баннеры
+        </motion.button>
       </motion.div>
 
       {/* Withdraw button */}
@@ -143,49 +243,70 @@ export default function TabReferral() {
       </motion.button>
 
       {/* Withdraw modal */}
-      {showWithdrawModal && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 z-50"
-            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)' }}
-            onClick={() => setShowWithdrawModal(false)}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={springConfig}
-            className="fixed bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl"
-            style={{ background: 'rgba(28,28,30,0.98)', border: '1px solid rgba(255,255,255,0.1)' }}
-          >
-            <h3 className="text-lg font-bold mb-4" style={{ color: '#F5F5F7' }}>Вывод средств</h3>
-            <div className="flex gap-3 mb-4">
-              {['CryptoBot', 'USDT TRC20'].map(method => (
-                <button
-                  key={method}
-                  className="flex-1 py-3 rounded-2xl text-sm font-medium"
-                  style={{ background: 'rgba(255,255,255,0.07)', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.08)' }}
-                >
-                  {method}
-                </button>
-              ))}
-            </div>
-            <input
-              placeholder="Введите адрес кошелька"
-              className="w-full px-4 py-3 rounded-2xl text-sm mb-4 outline-none"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: '#F5F5F7' }}
+      <AnimatePresence>
+        {showWithdrawModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50"
+              style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(16px)' }}
+              onClick={() => setShowWithdrawModal(false)}
             />
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              className="w-full py-4 rounded-2xl font-semibold text-white"
-              style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)' }}
+            <motion.div
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 60 }}
+              transition={springConfig}
+              className="fixed bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl"
+              style={{ background: 'rgba(22,22,24,0.99)', border: '1px solid rgba(255,255,255,0.1)' }}
             >
-              Отправить заявку
-            </motion.button>
-          </motion.div>
-        </>
-      )}
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-lg font-bold" style={{ color: '#F5F5F7' }}>Вывод средств</h3>
+                <button onClick={() => setShowWithdrawModal(false)}><X size={20} color="#98989D" /></button>
+              </div>
+
+              <p className="text-xs font-semibold mb-3" style={{ color: '#98989D' }}>Способ вывода</p>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {WITHDRAW_METHODS.map(m => (
+                  <motion.button
+                    key={m.id}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => setSelectedMethod(m.id)}
+                    className="flex items-center gap-2.5 px-4 py-3 rounded-2xl text-left"
+                    style={{
+                      background: selectedMethod === m.id ? 'rgba(10,132,255,0.15)' : 'rgba(44,44,46,0.5)',
+                      border: selectedMethod === m.id ? '1px solid rgba(10,132,255,0.4)' : '1px solid rgba(255,255,255,0.07)',
+                    }}
+                  >
+                    <span className="text-lg">{m.icon}</span>
+                    <span className="text-sm font-medium" style={{ color: selectedMethod === m.id ? '#F5F5F7' : '#98989D' }}>{m.label}</span>
+                    {selectedMethod === m.id && (
+                      <div className="ml-auto w-4 h-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)' }}>
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      </div>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+
+              <input
+                placeholder="Введите адрес кошелька"
+                className="w-full px-4 py-3 rounded-2xl text-sm mb-4 outline-none"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: '#F5F5F7' }}
+              />
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                className="w-full py-4 rounded-2xl font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg, #0A84FF, #5E5CE6)' }}
+              >
+                Отправить заявку — ₽ 4 650
+              </motion.button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

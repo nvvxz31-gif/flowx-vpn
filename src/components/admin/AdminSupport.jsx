@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, RefreshCw, Search, ChevronDown } from 'lucide-react';
+import { Send, RefreshCw, Search, Paperclip, Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const springConfig = { type: 'spring', stiffness: 300, damping: 30 };
@@ -12,7 +12,7 @@ function statusColor(s) {
   return { open: '#0A84FF', in_progress: '#FF9F0A', resolved: '#30D158', closed: '#98989D' }[s] || '#98989D';
 }
 function categoryLabel(c) {
-  return { server: '🖥️ Сервер', connection: '🔌 Подключение', payment: '💳 Оплата', account: '👤 Аккаунт', other: '💬 Другое' }[c] || c;
+  return { connection: '🔌 VPN / Сервер', payment: '💳 Оплата', account: '👤 Аккаунт', other: '💬 Другое' }[c] || c;
 }
 function priorityColor(p) {
   return { low: '#98989D', medium: '#FF9F0A', high: '#FF453A', urgent: '#FF0000' }[p] || '#98989D';
@@ -153,7 +153,10 @@ export default function AdminSupport() {
               <div className="text-sm font-medium truncate" style={{ color: '#F5F5F7' }}>{t.subject}</div>
               <div className="text-xs mt-0.5 flex items-center justify-between">
                 <span style={{ color: '#98989D' }}>{categoryLabel(t.category)}</span>
-                <span style={{ color: '#98989D' }}>{t.messages?.length || 0} сообщ.</span>
+                <div className="flex items-center gap-1.5">
+                  {t.rating > 0 && <span style={{ color: '#FFD60A', fontSize: '10px' }}>{'★'.repeat(t.rating)}</span>}
+                  <span style={{ color: '#98989D' }}>{t.messages?.length || 0} сообщ.</span>
+                </div>
               </div>
             </motion.button>
           ))}
@@ -178,7 +181,15 @@ export default function AdminSupport() {
                   <span className="text-xs font-mono" style={{ color: '#98989D' }}>#{selected.id?.slice(-6)}</span>
                   <span className="text-xs">{categoryLabel(selected.category)}</span>
                 </div>
-                <h3 className="text-base font-semibold" style={{ color: '#F5F5F7' }}>{selected.subject}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-semibold" style={{ color: '#F5F5F7' }}>{selected.subject}</h3>
+                  {selected.rating > 0 && (
+                    <span className="flex items-center gap-0.5 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,214,10,0.15)', color: '#FFD60A' }}>
+                      <Star size={10} fill="#FFD60A" strokeWidth={0} />
+                      {selected.rating}/5
+                    </span>
+                  )}
+                </div>
                 {selected.flow_data && Object.keys(selected.flow_data).length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {Object.entries(selected.flow_data).map(([k, v]) => (
@@ -226,7 +237,13 @@ export default function AdminSupport() {
                     }}
                   >
                     <div className="text-xs mb-1 opacity-60 font-medium">{msg.sender === 'admin' ? 'Поддержка' : 'Пользователь'}</div>
-                    <div style={{ whiteSpace: 'pre-line' }}>{msg.text}</div>
+                    {msg.text && <div style={{ whiteSpace: 'pre-line' }}>{msg.text}</div>}
+                    {msg.file_url && (
+                      <a href={msg.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 mt-1.5 text-xs underline opacity-80">
+                        <Paperclip size={10} />
+                        Вложение
+                      </a>
+                    )}
                     <div className="text-xs mt-1 opacity-50">{new Date(msg.timestamp).toLocaleString('ru', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
                 </div>
